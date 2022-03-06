@@ -10,7 +10,7 @@ from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, current_user, login_required
 from app.forms import LoginForm
 from app.models import UserProfile
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 
 ###
@@ -56,10 +56,10 @@ def login():
 
             # remember to flash a message to the user
             flash('Logged in successfully!', 'success')
+            return redirect(url_for("secure_page"))
         else:
             flash('Username or Password incorrect.', 'danger')
-
-            return redirect(url_for("secure_page"))  # they should be redirected to a secure-page route instead
+          # they should be redirected to a secure-page route instead
     return render_template("login.html", form=form)
 
 
@@ -73,6 +73,13 @@ def load_user(id):
 @login_required
 def secure_page():
     render_template('secure_page.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You are now logged out')
+    return redirect(url_for('home'))
 
 ###
 # The functions below should be applicable to all Flask apps.
